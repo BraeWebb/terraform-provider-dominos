@@ -67,7 +67,7 @@ func resourceOrderCreate(d *schema.ResourceData, m interface{}) error {
         "ServiceMethod": "Delivery",
         "Tags": map[string]string{},
         "Version": "1.0",
-        "SourceOrganizationURI": "order.dominos.com",
+        "SourceOrganizationURI": "order.dominos.com.au",
         "LanguageCode": "en",
         "Partners": map[string]string{},
         "NewUser": true,
@@ -80,7 +80,7 @@ func resourceOrderCreate(d *schema.ResourceData, m interface{}) error {
         "StoreID": store_id,
     }
 
-    menuapi, err := getMenuApiObject(fmt.Sprintf("https://order.dominos.com/power/store/%s/menu?lang=en&structured=true", store_id), client)
+    menuapi, err := getMenuApiObject(fmt.Sprintf("https://order.dominos.com.au/power/store/%s/menu?lang=en&structured=true", store_id), client)
     if err != nil {
         return err
     }
@@ -103,11 +103,11 @@ func resourceOrderCreate(d *schema.ResourceData, m interface{}) error {
     if err != nil {
         return err
     }
-    val_req, err := http.NewRequest("POST", "https://order.dominos.com/power/price-order", strings.NewReader(string(val_bytes)))
+    val_req, err := http.NewRequest("POST", "https://order.dominos.com.au/power/price-order", strings.NewReader(string(val_bytes)))
     if err != nil {
         return err
     }
-    val_req.Header.Set("Referer", "https://order.dominos.com/en/pages/order/")
+    val_req.Header.Set("Referer", "https://order.dominos.com.au/en/pages/order/")
     val_req.Header.Set("Content-Type", "application/json")
     dumpreq, err := httputil.DumpRequest(val_req, true)
     if err != nil {
@@ -151,11 +151,11 @@ func resourceOrderCreate(d *schema.ResourceData, m interface{}) error {
     if err != nil {
         return err
     }
-    order_req, err := http.NewRequest("POST", "https://order.dominos.com/power/place-order", strings.NewReader(string(order_bytes)))
+    order_req, err := http.NewRequest("POST", "https://order.dominos.com.au/power/place-order", strings.NewReader(string(order_bytes)))
     if err != nil {
         return err
     }
-    order_req.Header.Set("Referer", "https://order.dominos.com/en/pages/order/")
+    order_req.Header.Set("Referer", "https://order.dominos.com.au/en/pages/order/")
     order_req.Header.Set("Content-Type", "application/json")
 
     dump_order_req, err := httputil.DumpRequest(order_req, true)
@@ -221,7 +221,7 @@ type OrderStatus struct {
 func getOrder(client *http.Client, phonenumber, orderid string) (*OrderStatus, error) {
     // hm.  easy to fetch, hard to process.
     // grab out "soap:Envelope.soap:Body.GetTrackerDataResponse.OrderStatuses.[OrderStatus where OrderID = orderid]
-    r, err := client.Get(fmt.Sprintf("https://trkweb.dominos.com/orderstorage/GetTrackerData?Phone=%s", phonenumber))
+    r, err := client.Get(fmt.Sprintf("https://trkweb.dominos.com.au/orderstorage/GetTrackerData?Phone=%s", phonenumber))
     if err != nil {
         return nil, err
     }

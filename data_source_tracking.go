@@ -29,7 +29,7 @@ func resourceTrackingRead(d *schema.ResourceData, m interface{}) error {
     var client = &http.Client{Timeout: 10 * time.Second}
     order_id := d.Get("order_id").(string)
     store_id := d.Get("store_id").(string)
-    _, err := getTrackingApiObject(fmt.Sprintf("https://trkweb.dominos.com/orderstorage/GetTrackerData?StoreID=%s&OrderKey=%s", store_id, order_id), client)
+    _, err := getTrackingApiObject(fmt.Sprintf("https://trkweb.dominos.com.au/orderstorage/GetTrackerData?StoreID=%s&OrderKey=%s", store_id, order_id), client)
     if err != nil {
         return err
     }

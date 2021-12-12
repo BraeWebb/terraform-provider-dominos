@@ -47,7 +47,7 @@ func dataSourceMenu() *schema.Resource {
 func resourceMenuRead(d *schema.ResourceData, m interface{}) error {
     var client = &http.Client{Timeout: 10 * time.Second}
     store_id := d.Get("store_id").(string)
-    menuitems, err := getAllMenuItems(fmt.Sprintf("https://order.dominos.com/power/store/%s/menu?lang=en&structured=true", store_id), client)
+    menuitems, err := getAllMenuItems(fmt.Sprintf("https://order.dominos.com.au/power/store/%s/menu?lang=en&structured=true", store_id), client)
     if err != nil {
         return err
     }

@@ -2,6 +2,7 @@ package main
 
 import (
     "fmt"
+    "log"
 	"time"
     "net/http"
     "net/url"
@@ -18,7 +19,7 @@ func dataSourceStore() *schema.Resource {
 				Required: true,
 			},
 			"store_id": &schema.Schema{
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
             "delivery_minutes": &schema.Schema{
@@ -37,36 +38,32 @@ func resourceStoreRead(d *schema.ResourceData, m interface{}) error {
         return err
     }
     line1 := url.QueryEscape(address_url_obj["line1"])
+    log.Printf("%s\n", line1)
     line2 := url.QueryEscape(address_url_obj["line2"])
-    stores, err := getStores(fmt.Sprintf("https://order.dominos.com/power/store-locator?s=%s&c=%s&s=Delivery", line1, line2), client)
+    log.Printf("%s\n", line2);
+    log.Printf("%s\n", fmt.Sprintf("https://www.dominos.com.au/dynamicstoresearchapi/getlimitedstores/25/%s%%20%s", line1, line2));
+    stores, err := getStores(fmt.Sprintf("https://www.dominos.com.au/dynamicstoresearchapi/getlimitedstores/25/%s%%20%s", line1, line2), client)
+    fmt.Println(err);
     if err != nil {
         return err
     }
     if len(stores) == 0 {
         return fmt.Errorf("No stores near the address %#v", address_url_obj)
     }
-    d.Set("store_id", stores[0].StoreID)
-    d.Set("delivery_minutes", stores[0].ServiceMethodEstimatedWaitMinutes.Delivery.Min)
+    d.Set("store_id", stores[0].StoreNo)
+    d.Set("delivery_minutes", stores[0].DeliveryLeadTime)
     d.SetId("store")
 	return nil
 }
 
 
 type StoresResponse struct {
-	Stores []Store
+	Data []Store
 }
 
 type Store struct {
-	StoreID  string
-	ServiceMethodEstimatedWaitMinutes WaitMinutes
-}
-
-type WaitMinutes struct {
-	Delivery DeliveryMinutes
-}
-
-type DeliveryMinutes struct {
-	Min int
+	StoreNo  int
+	DeliveryLeadTime int
 }
 
 func getStores(url string, client *http.Client) ([]Store, error) {
@@ -81,5 +78,5 @@ func getStores(url string, client *http.Client) ([]Store, error) {
     if err != nil {
         return nil, err
     }
-    return resp.Stores, nil
+    return resp.Data, nil
 }
